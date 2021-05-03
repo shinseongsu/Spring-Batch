@@ -42,7 +42,7 @@ public class HelloWorldJob {
     @Bean
     public Step step1() {
         return this.stepBuilderFactory.get("step1")
-                .tasklet(helloWorldTasklet())
+                .tasklet(helloWorldTasklet(null))
                 .build();
     }
 
