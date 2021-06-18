@@ -1,9 +1,0 @@
-id,type,name,string_val,long_val,identifying
-1,STRING,name,Michael,0,Y
-2,LONG,run.id,,1,Y
-1,STRING,fileName,foo.csv,0,Y
-2,STRINGname,Michael,0,Y
-2,LONG,run.id,,2,Y
-3,STRING,name,Michael,0,Y
-3,STRING,fileName,foo.csv,0,Y
-3,LONG,run.id,,3,Y
