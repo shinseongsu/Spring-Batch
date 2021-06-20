@@ -1,6 +1,7 @@
 package io.spring.batch;
 
 import io.spring.batch.batch.DailyJobTimestamper;
+import io.spring.batch.batch.JobLoggerListener;
 import io.spring.batch.batch.ParameterValidator;
 
 import org.springframework.batch.core.Job;
@@ -56,6 +57,7 @@ public class HelloWorldJob {
                 .start(step1())
                 .validator(validator())
                 .incrementer(new DailyJobTimestamper())
+                .listener(new JobLoggerListener())
                 .build();
     }
 
@@ -69,10 +71,14 @@ public class HelloWorldJob {
     @StepScope
     @Bean
     public Tasklet helloWorldTasklet(
-                                @Value("#{jobParameters['name']}") String name,
-                                @Value("#{jobParameters['fileName']}") String fileName) {
+                    @Value("#{jobParameters['name']}") String name,
+                    @Value("#{jobParameters['fileName']}") String fileName) {
 
-        return (contribution, chunkContent) -> {
+        System.out.println("#######################");
+        System.out.println(name + " :: " + fileName);
+
+        return (contribution, chunkContext) -> {
+
             System.out.println(String.format("Hello, %s!", name));
             System.out.println(String.format("fileName = %s", fileName));
 
