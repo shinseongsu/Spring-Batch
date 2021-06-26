@@ -21,7 +21,7 @@ public class HelloWorld implements Tasklet {
                                             .getStepExecution()
                                             .getExecutionContext();
 
-        jobContext.put("user.name", name);
+        jobContext.put("name", name);
 
         System.out.println( String.format(HELLO_WORLD, name) );
         return RepeatStatus.FINISHED;
