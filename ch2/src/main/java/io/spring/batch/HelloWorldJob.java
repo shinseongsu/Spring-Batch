@@ -6,12 +6,14 @@ import io.spring.batch.batch.ParameterValidator;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.CompositeJobParametersValidator;
 import org.springframework.batch.core.job.DefaultJobParametersValidator;
+import org.springframework.batch.core.listener.ExecutionContextPromotionListener;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,9 +57,10 @@ public class HelloWorldJob {
     public Job job() {
         return this.jobBuilderFactory.get("basicJob")
                 .start(step1())
-                .validator(validator())
+                .next(step2())
+                /*.validator(validator())
                 .incrementer(new DailyJobTimestamper())
-                .listener(new JobLoggerListener())
+                .listener(new JobLoggerListener())*/
                 .build();
     }
 
@@ -65,7 +68,32 @@ public class HelloWorldJob {
     public Step step1() {
         return this.stepBuilderFactory.get("step1")
                 .tasklet(helloWorldTasklet(null, null))
+                .listener(promotionListener())
                 .build();
+    }
+
+    @Bean
+    public Step step2() {
+        this.stepBuilderFactory.get("step2")
+                .tasklet(new GoodByeTasklet())
+                .build();
+    }
+
+    @Bean
+    public StepExecutionListener promotionListener() {
+        ExecutionContextPromotionListener listener = new
+                ExecutionContextPromotionListener();
+
+        listener.setKeys(new String[] {"name"});
+        return listener;
+    }
+
+    @StepScope
+    @Bean
+    public Tasklet GoodByeTasklet() {
+        return (contribution, chunkContext) -> {
+            return RepeatStatus.FINISHED;
+        };
     }
 
     @StepScope
