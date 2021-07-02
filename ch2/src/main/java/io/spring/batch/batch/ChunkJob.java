@@ -40,9 +40,12 @@ public class ChunkJob {
     @Bean
     public Step chunkStep() {
         return this.stepBuilderFactory.get("chunkStep")
-                    .<String, String>chunk(completionPolicy())
+        //            .<String, String>chunk(completionPolicy())
+        //            .<String, String>chunk(randomCompletionPolicy())
+                    .<String, String> chunk(1000)
                     .reader(itemReader())
                     .writer(itemWriter())
+                    .listener(new LoggingStepStartStopListener())
                     .build();
     }
 
@@ -64,6 +67,11 @@ public class ChunkJob {
                 System.out.println(">> current item = " + item);
             }
         };
+    }
+
+    @Bean
+    public CompletionPolicy randomCompletionPolicy() {
+        return new RandomChunkSizePolicy();
     }
 
     @Bean
